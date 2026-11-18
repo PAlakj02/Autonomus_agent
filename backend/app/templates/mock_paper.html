@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>{{ paper.title }}{% if include_answers %} - Answer Key{% endif %}</title>
+<style>
+  @page {
+    size: a4 portrait;
+    margin: 1.8cm 1.8cm 2cm 1.8cm;
+    @frame footer { -pdf-frame-content: footer; bottom: 0.8cm; margin-left: 1.8cm; margin-right: 1.8cm; height: 1cm; }
+  }
+  body { font-family: Helvetica, Arial, sans-serif; font-size: 10.5pt; color: #111; line-height: 1.4; }
+  h1 { font-size: 17pt; text-align: center; margin: 0 0 2pt 0; }
+  .sub { text-align: center; font-size: 10pt; color: #444; margin: 0 0 8pt 0; }
+  .meta { width: 100%; border-top: 1.5pt solid #111; border-bottom: 1.5pt solid #111; margin-bottom: 8pt; }
+  .meta td { padding: 4pt 0; font-size: 10pt; }
+  .right { text-align: right; }
+  .key-banner { background: #111; color: #fff; text-align: center; padding: 4pt; font-weight: bold; margin-bottom: 8pt; }
+  .gi { margin: 0 0 10pt 0; padding-left: 14pt; font-size: 9.5pt; }
+  .section-title { font-size: 12pt; font-weight: bold; margin: 12pt 0 2pt 0; border-bottom: 0.75pt solid #999; padding-bottom: 2pt; }
+  .section-ins { font-style: italic; font-size: 9.5pt; color: #444; margin: 0 0 6pt 0; }
+  table.q { width: 100%; margin: 0 0 7pt 0; }
+  table.q td { vertical-align: top; }
+  .qn { width: 26pt; font-weight: bold; }
+  .qm { width: 46pt; text-align: right; font-weight: bold; white-space: nowrap; }
+  table.opts { width: 100%; margin-top: 3pt; }
+  table.opts td { width: 50%; padding: 1pt 0; }
+  .ans { margin-top: 4pt; padding: 4pt 6pt; background: #f1f4f9; border-left: 2pt solid #3b5bdb; font-size: 9.5pt; }
+  .ms { margin-top: 2pt; font-size: 9pt; color: #333; }
+  .correct { font-weight: bold; text-decoration: underline; }
+  #footer { font-size: 8.5pt; color: #666; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>{{ paper.title }}</h1>
+  <p class="sub">{{ paper.subject }}{% if paper.grade %} &middot; {{ paper.grade }}{% endif %}{% if paper.board %} &middot; {{ paper.board }}{% endif %}</p>
+
+  <table class="meta"><tr>
+    <td>Time allowed: <b>{{ paper.duration_minutes }} minutes</b></td>
+    <td class="right">Maximum marks: <b>{{ paper.total_marks }}</b></td>
+  </tr></table>
+
+  {% if include_answers %}<div class="key-banner">ANSWER KEY &amp; MARKING SCHEME</div>{% endif %}
+
+  {% if general_instructions and not include_answers %}
+  <b>General instructions</b>
+  <ol class="gi">{% for line in general_instructions %}<li>{{ line }}</li>{% endfor %}</ol>
+  {% endif %}
+
+  {% for sec in sections %}
+  <div class="section-title">{{ sec.title }} <span style="font-weight:normal">({{ sec.num_questions }} &times; {{ sec.marks_each }} = {{ sec.marks }} marks)</span></div>
+  {% if sec.instructions %}<p class="section-ins">{{ sec.instructions }}</p>{% endif %}
+
+  {% for q in sec.questions %}
+  <table class="q"><tr>
+    <td class="qn">Q{{ q.number }}.</td>
+    <td>
+      {{ q.question }}
+      {% if q.options %}
+      <table class="opts">
+        {% for row in q.options | batch(2) %}{% set r = loop.index0 %}<tr>
+          {% for opt in row %}{% set letter = letters[r * 2 + loop.index0] %}
+          <td{% if include_answers and q.answer == letter %} class="correct"{% endif %}>({{ letter | lower }}) {{ opt }}</td>
+          {% endfor %}
+        </tr>{% endfor %}
+      </table>
+      {% endif %}
+      {% if include_answers %}
+      <div class="ans"><b>Answer:</b> {{ q.answer }}{% if q.options and q.answer in letters %} &mdash; {{ q.options[letters.index(q.answer)] }}{% endif %}
+        {% if q.marking_scheme %}<br/><span class="ms"><b>Marking:</b> {{ q.marking_scheme }}</span>{% endif %}
+      </div>
+      {% endif %}
+    </td>
+    <td class="qm">[{{ q.marks }}]</td>
+  </tr></table>
+  {% endfor %}
+  {% endfor %}
+
+  <div id="footer">{{ paper.title }}{% if include_answers %} &middot; Answer key{% endif %} &middot; Page <pdf:pagenumber> of <pdf:pagecount></div>
+</body>
+</html>

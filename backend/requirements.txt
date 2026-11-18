@@ -1,0 +1,27 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+sqlalchemy==2.0.35
+pydantic==2.14.1
+pydantic-settings==2.5.2
+python-dotenv==1.0.1
+python-multipart==0.0.9
+
+# Request understanding (placeholder key in .env)
+groq==1.7.0
+
+# Gemini: image model (design flow) + text model (mock paper flow)
+google-genai==2.33.0
+
+# Auth / storage (placeholder credentials in .env)
+firebase-admin==6.5.0
+
+# Content -> PDF rendering
+reportlab==4.2.2
+Pillow==10.4.0
+
+# Mock paper flow: material extraction + HTML -> PDF
+pypdf==5.1.0
+python-docx==1.1.2
+Jinja2==3.1.4
+xhtml2pdf==0.2.16
+httpx==0.28.1

@@ -1,0 +1,11 @@
+.DS_Store
+.env
+*.local
+backend/.venv/
+backend/app.db
+backend/generated/*
+!backend/generated/.gitkeep
+__pycache__/
+node_modules/
+.output/
+.vercel/
